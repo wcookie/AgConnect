@@ -31,11 +31,12 @@ def test_view(request):
 		else:
 			if char =='=':
 				tester=True
-	posturl =  "htps://climate.com/api/oauth/token"
-	postjson = {"grant_type": "authorization_code", "scope": "openid user", "redirect_uri": "http://17495abb.ngrok.io/test/homepage", "code":newstring}
+	posturl =  "https://climate.com/api/oauth/token"
+	postjson = {"grant_type": "authorization_code", "scope": "openid user", "redirect_uri": "http://17495abb.ngrok.io/test/redirecter", "code":newstring}
 	encoded =base64.b64encode(CLIENT_ID+':'+CLIENT_SECRET)
 	headers = {"Authorization": "Basic "+encoded}
 	r=requests.post(posturl, data=postjson, headers=headers)
-	return render(request, 'agro/test.html', {"code": r.statuscode})
+	d = json.loads(r.text)
+	return render(request, 'agro/test.html', {"code": d['access_token']})
 def homepage(request):
 	return render(request, "agro/index.html")
