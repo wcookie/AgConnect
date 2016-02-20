@@ -11,8 +11,8 @@ CLIENT_ID="dpv6qe32snp744"
 CLIENT_SECRET="bvbbhspmkm6442lnfh0eujqcsl"
 INTERNAL_ID="02ff6b24-701e-4527-a96a-99dcd0a42d68"
 url="https://climate.com/api/oauth/token/"
-
-
+GOOGLE_MAPS_API_KEY = "AIzaSyBATtuDcFMBidVP5S2yXSusDckEuTBw2nI"
+GOOGLE_MAPS_URL="https://maps.googleapis.com/maps/api/geocode/json"
 
 def login_view(request):
 	callbackurl = "http://17495abb.ngrok.io/test/redirecter"
@@ -37,6 +37,49 @@ def test_view(request):
 	headers = {"Authorization": "Basic "+encoded}
 	r=requests.post(posturl, data=postjson, headers=headers)
 	d = json.loads(r.text)
-	return render(request, 'agro/test.html', {"code": d['access_token']})
+	access_token = d['access_token']
+	farmsurl= "https://hackillinois.climate.com/api/fields/24616418"
+	headers2= {"Authorization": "Bearer " +access_token}
+	r2=requests.get(farmsurl, headers=headers2)
+	return render(request, 'agro/test.html', {"code": r2.text})
 def homepage(request):
-	return render(request, "agro/index.html")
+	geturl = "http://quickstats.nass.usda.gov/api/api_GET"
+	API_KEY = "9C641011-EF91-327C-85AE-BAF02D9A5BAD"
+	params = {"key": API_KEY, "commodity_desc": "CORN", "year":"2012","begin_code_alpha":"1", "end_code_alpha":"2", "county_code_alpha": "001", "state_alpha": "CT", "format": "JSON"}
+	r = requests.get(geturl, params)
+	d = json.loads(r.text)
+	myjson =[]
+	tons =0
+	tonscount=0
+	tonsperacre=0
+	tonsperacrecount=0
+	dollars=0
+	dollarscount=0
+	for j in d['data']:
+		val=j['Value']
+		oldval=val
+		val=val.replace(',', '')
+		#print val
+		try:
+			intval=int(val)
+		#try: 
+			if j['unit_desc']=="$":
+				
+				dollars+=intval
+				dollarscount+=1
+			elif j['unit_desc']=="TONS":
+				tons+=intval
+				tonscount+=1
+			elif j['unit_desc']=="TONS / ACRE":
+				tonsperacrecount+=1
+				tonsperacre += intval
+			myjson.append([j['unit_desc'], j['Value']])
+		except:
+			print j['unit_desc']
+			print "oldval: " +oldval + "new val: " +val
+		#except:
+		#	myjson.append({"NO VALUE"})
+	newjson = [ {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}]
+	google_params= {"latlng": "40.714224,-73.961452", "key": GOOGLE_MAPS_API_KEY}
+	r2=requests.get(GOOGLE_MAPS_URL, google_params)
+	return render(request, "agro/index.html", {"stuff": r2.text})
