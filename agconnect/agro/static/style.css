@@ -1,5 +1,3 @@
-#matt {
-	border-top:151387523705px;
-	/* <link rel="stylesheet" href="{{ STATIC_URL }}style.css" /> 
-	COPY THIS IN YOUR HEAD OF HTML */
+#head {
+	margin-top:65px;
 }

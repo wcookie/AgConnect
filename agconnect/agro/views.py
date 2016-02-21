@@ -49,7 +49,7 @@ def test_view(request):
 	#headers2= {"Authorization": "Bearer " +access_token}
 	#r2=requests.get(farmsurl, headers=headers2)
 	request.session['access_token'] = access_token
-	return HttpResponseRedirect(reverse('dash'))
+	return HttpResponseRedirect(reverse('agro:dash'))
 	#this gets all of the users fields that they have
 	#return render(request, 'agro/test.html', {"code": r2.text})
 
@@ -309,7 +309,11 @@ def homepage(request):
 	
 #	newjson =  {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}
 	return render(request, "agro/graphs.html", {"stuff": returner})	
+def farm_two(request):
+	return
 
+def farm_three(request):
+	return
 
 
 def geo_view(request):

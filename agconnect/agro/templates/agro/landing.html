@@ -1,0 +1,46 @@
+<!doctype html >
+
+<html>
+
+<head>
+<link rel="stylesheet" href="{{ STATIC_URL }}../../static/style.css" /> 
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+</head>
+
+<body>
+<div class="navbar-container">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+      <!--<div class="navbar-container"> -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">AgConnect</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="https://www.climate.com/">The Climate Corporation</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+ 	</nav>
+</div>
+
+<div class="main-container">
+	<div class="login-container">
+		<h1 id="head"><b>Welcome to AgConnect!</b></h1>
+		<p><i>Bringing data and farmers together. </i></p>
+		<a href="{% url 'agro:login' %}"><button id="login_button" type="button" class="btn btn-lg btn-primary" >Login With Climate
+		</button></a>
+   	</div>
+</div>
+
+</body>
+
+</html>

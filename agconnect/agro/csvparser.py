@@ -15,6 +15,8 @@ def weather_stuff(city):
 		myfile='morris.csv'
 	elif city=="Colombus":
 		myfile='colombus.csv'
+	elif city=="Canton":
+		myfile='canton.csv'
 	module_dir = os.path.dirname(__file__)  # get current directory
 	file_path = os.path.join(module_dir, myfile)
 
