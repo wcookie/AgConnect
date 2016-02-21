@@ -19,7 +19,7 @@ GOOGLE_MAPS_API_KEY = "AIzaSyBATtuDcFMBidVP5S2yXSusDckEuTBw2nI"
 GOOGLE_MAPS_URL="https://maps.googleapis.com/maps/api/geocode/json"
 
 def login_view(request):
-	callbackurl = "http://17495abb.ngrok.io/test/redirecter"
+	callbackurl = "https://7e2ca291.ngrok.io/test/redirecter"
 	#callbackurl = request.get_full_path()
 	myjson ={'client_id': CLIENT_ID, "mobile": "true", "page":"oidcauthn", "response_type": "code", "redirect_uri":callbackurl, "scope":"openid user"}
 	url2 = "https://climate.com/static/app-login/index.html?scope=openid+user"
@@ -38,7 +38,7 @@ def test_view(request):
 			if char =='=':
 				tester=True
 	posturl =  "https://climate.com/api/oauth/token"
-	postjson = {"grant_type": "authorization_code", "scope": "openid user", "redirect_uri": "http://17495abb.ngrok.io/test/redirecter", "code":newstring}
+	postjson = {"grant_type": "authorization_code", "scope": "openid user", "redirect_uri": "https://7e2ca291.ngrok.io/test/redirecter", "code":newstring}
 	encoded =base64.b64encode(CLIENT_ID+':'+CLIENT_SECRET)
 	headers = {"Authorization": "Basic "+encoded}
 	r=requests.post(posturl, data=postjson, headers=headers)
