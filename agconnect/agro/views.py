@@ -7,6 +7,8 @@ import requests
 import json
 import base64
 from requests_oauthlib import OAuth1
+from geopy.geocoders import Nominatim
+
 CLIENT_ID="dpv6qe32snp744"
 CLIENT_SECRET="bvbbhspmkm6442lnfh0eujqcsl"
 INTERNAL_ID="02ff6b24-701e-4527-a96a-99dcd0a42d68"
@@ -38,7 +40,7 @@ def test_view(request):
 	r=requests.post(posturl, data=postjson, headers=headers)
 	d = json.loads(r.text)
 	access_token = d['access_token']
-	farmsurl= "https://hackillinois.climate.com/api/fields/24616418"
+	farmsurl= "https://hackillinois.climate.com/api/fields/"
 	headers2= {"Authorization": "Bearer " +access_token}
 	r2=requests.get(farmsurl, headers=headers2)
 	return render(request, 'agro/test.html', {"code": r2.text})
@@ -79,7 +81,13 @@ def homepage(request):
 			print "oldval: " +oldval + "new val: " +val
 		#except:
 		#	myjson.append({"NO VALUE"})
+		
+	lat = 41.78648088915638
+	longi = -89.04467321197389
+	print str(lat) + ", AND " + str(longi)
 	newjson = [ {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}]
-	google_params= {"latlng": "40.714224,-73.961452", "key": GOOGLE_MAPS_API_KEY}
-	r2=requests.get(GOOGLE_MAPS_URL, google_params)
-	return render(request, "agro/index.html", {"stuff": r2.text})
+	geolocator = Nominatim()
+	location = geolocator.reverse(str(lat) + "," + str(longi))
+#	print location.address
+
+	return render(request, "agro/index.html", {"stuff": location.address})
