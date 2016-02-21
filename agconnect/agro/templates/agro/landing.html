@@ -24,10 +24,12 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li class="active"><a href="{% url 'landing' %}">Home</a></li>
             <li><a href="about.html">About</a></li>
             {% if request.session.access_token %}
             	<li><a href="{% url 'agro:dash' %}"> First Farm </li></a>
+            	<li><a href="{% url 'agro:second' %}"> Second Farm </li></a>
+            	<li><a href="{% url 'agro:third' %}"> Third Farm </li></a>
             {% endif %}
             <li><a href="https://www.climate.com/">The Climate Corporation</a></li>
           </ul>
