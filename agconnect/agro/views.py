@@ -8,6 +8,7 @@ import json
 import base64
 from requests_oauthlib import OAuth1
 from geopy.geocoders import Nominatim
+import webscraper
 
 CLIENT_ID="dpv6qe32snp744"
 CLIENT_SECRET="bvbbhspmkm6442lnfh0eujqcsl"
@@ -23,6 +24,8 @@ def login_view(request):
 	url2 = "https://climate.com/static/app-login/index.html?scope=openid+user"
 	newurl2 = "https://climate.com/static/app-login/index.html?scope=openid+user&client_id="+CLIENT_ID+"&mobile=true&page=oidcauthn&response_type=code&redirect_uri="+callbackurl+"&scope=openid user"
 	return HttpResponseRedirect(newurl2)
+	#This stuff is all of my login oatuh stuff
+
 def test_view(request):
 	myurl = request.get_full_path()
 	tester = False
@@ -43,6 +46,8 @@ def test_view(request):
 	farmsurl= "https://hackillinois.climate.com/api/fields/"
 	headers2= {"Authorization": "Bearer " +access_token}
 	r2=requests.get(farmsurl, headers=headers2)
+
+	#this gets all of the users fields that they have
 	return render(request, 'agro/test.html', {"code": r2.text})
 def homepage(request):
 	geturl = "http://quickstats.nass.usda.gov/api/api_GET"
@@ -81,13 +86,28 @@ def homepage(request):
 			print "oldval: " +oldval + "new val: " +val
 		#except:
 		#	myjson.append({"NO VALUE"})
-		
+	#so far this is arbitrary.  time to make it take an input of a JSON object of all the fields lat and long and names
+	# then pass it into geo_view which i will change from a view
+	#into a function that takes two parameters, lat and longi.  Then display the stuff I was doing before. 
+	newjson = [ {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}]
+	return render(request, "agro/index.html", {"stuff": newjson})	
+
+
+
+def geo_view(request):
+
 	lat = 41.78648088915638
 	longi = -89.04467321197389
-	print str(lat) + ", AND " + str(longi)
-	newjson = [ {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}]
 	geolocator = Nominatim()
 	location = geolocator.reverse(str(lat) + "," + str(longi))
+	arr = location.address.split(',')
+	print arr[2]
+	mystring=""
+	for char in arr[2][1::]:
+		if char==' ':
+			break
+		else:
+			mystring+=char
 #	print location.address
-
-	return render(request, "agro/index.html", {"stuff": location.address})
+	codes = webscraper.parse_file("Illinois", mystring)
+	return render(request, "agro/index.html", {"stuff": codes})

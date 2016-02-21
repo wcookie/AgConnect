@@ -1,4 +1,5 @@
 #	ORDER IS State Code, Distric Code, County Code, State or County Name, BS thing i don't care about
+import os
 
 def state_code(state):
 	return {
@@ -57,7 +58,9 @@ def state_code(state):
 
 def parse_file(state, county):
 	code = state_code(state)
-	text= open('codes.txt', 'r') 
+	module_dir = os.path.dirname(__file__)  # get current directory
+	file_path = os.path.join(module_dir, 'codes.txt')
+	text= open(file_path, 'r') 
 	
 	for row in text:
 		row =row.strip('\n')
