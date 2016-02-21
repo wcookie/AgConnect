@@ -9,6 +9,7 @@ import base64
 from requests_oauthlib import OAuth1
 from geopy.geocoders import Nominatim
 import webscraper
+import time
 
 CLIENT_ID="dpv6qe32snp744"
 CLIENT_SECRET="bvbbhspmkm6442lnfh0eujqcsl"
@@ -43,18 +44,67 @@ def test_view(request):
 	r=requests.post(posturl, data=postjson, headers=headers)
 	d = json.loads(r.text)
 	access_token = d['access_token']
+	print access_token
+	#farmsurl= "https://hackillinois.climate.com/api/fields/"
+	#headers2= {"Authorization": "Bearer " +access_token}
+	#r2=requests.get(farmsurl, headers=headers2)
+	request.session['access_token'] = access_token
+	return HttpResponseRedirect(reverse('dash'))
+	#this gets all of the users fields that they have
+	#return render(request, 'agro/test.html', {"code": r2.text})
+
+def homepage(request):
+	access_token=""
+	while (True):
+		try:
+			access_token = request.session['access_token']
+			print access_token
+			break
+		except:
+			pass
+			
+
+	#print access_token
 	farmsurl= "https://hackillinois.climate.com/api/fields/"
 	headers2= {"Authorization": "Bearer " +access_token}
+	
 	r2=requests.get(farmsurl, headers=headers2)
-
-	#this gets all of the users fields that they have
-	return render(request, 'agro/test.html', {"code": r2.text})
-def homepage(request):
 	geturl = "http://quickstats.nass.usda.gov/api/api_GET"
 	API_KEY = "9C641011-EF91-327C-85AE-BAF02D9A5BAD"
-	params = {"key": API_KEY, "commodity_desc": "CORN", "year":"2012","begin_code_alpha":"1", "end_code_alpha":"2", "county_code_alpha": "001", "state_alpha": "CT", "format": "JSON"}
+	d=[]
+	while (True):
+		try:
+			d=json.loads(r2.text)
+			break
+		except:
+			pass
+	longi = d['fields'][1]['centroid']['coordinates'][0]
+	print longi
+	lat = d['fields'][1]['centroid']['coordinates'][1]
+	print lat
+	codes = []
+	codes=geo_helper(lat,longi)
+	print codes
+	#params = {"key": API_KEY, "commodity_desc": "CORN", "year":"2012","begin_code_alpha":"1", "end_code_alpha":"2", "county_code_alpha": "001", "state_alpha": "CT", "format": "JSON"}
+	state_val=""
+	if codes[0]=="17":
+		state_val="IL"
+	elif codes[0]=="09":
+		state_val="CT"
+	elif codes[0]=="19":
+		state_val="IA"
+	elif codes[0]=="34":
+		state_val="NJ"	
+	# 001 CT
+	# 061 IA
+	# 027 NJ
+	print state_val
+	params = {"key": API_KEY, "commodity_desc": "CORN", 
+	"year":"2012","begin_code_alpha":"1", "end_code_alpha":"12", "county_code_alpha":codes[1], 
+	"state_alpha": state_val, "format": "JSON"}
 	r = requests.get(geturl, params)
 	d = json.loads(r.text)
+	print d
 	myjson =[]
 	tons =0
 	tonscount=0
@@ -66,7 +116,6 @@ def homepage(request):
 		val=j['Value']
 		oldval=val
 		val=val.replace(',', '')
-		#print val
 		try:
 			intval=int(val)
 		#try: 
@@ -82,14 +131,20 @@ def homepage(request):
 				tonsperacre += intval
 			myjson.append([j['unit_desc'], j['Value']])
 		except:
-			print j['unit_desc']
-			print "oldval: " +oldval + "new val: " +val
-		#except:
-		#	myjson.append({"NO VALUE"})
+			pass
+			#print j['unit_desc']
+			#print "oldval: " +oldval + "new val: " +val
 	#so far this is arbitrary.  time to make it take an input of a JSON object of all the fields lat and long and names
 	# then pass it into geo_view which i will change from a view
 	#into a function that takes two parameters, lat and longi.  Then display the stuff I was doing before. 
-	newjson = [ {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}]
+	newjson={}
+	if dollarscount>0:
+		newjson['$']=[dollars,dollarscount,dollars/dollarscount]
+	if tonscount>0:
+		newjson['TONS']=[tons, tonscount, tons/tonscount]
+	if tonsperacrecount>0:
+		newjson["TONS / ACRE"] = [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]
+#	newjson =  {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}
 	return render(request, "agro/index.html", {"stuff": newjson})	
 
 
@@ -111,3 +166,26 @@ def geo_view(request):
 #	print location.address
 	codes = webscraper.parse_file("Illinois", mystring)
 	return render(request, "agro/index.html", {"stuff": codes})
+
+
+def geo_helper(lat, longi):
+	geolocator = Nominatim()
+	location = geolocator.reverse(str(lat) + "," + str(longi))
+	arr = location.address.split(',')
+	print arr[2]
+	print arr[3]
+	mystate=""
+	mycounty=""
+	for char in arr[3][1::]:
+		if char==' ':
+			break
+		else:
+			mystate+=char
+	for char in arr[2][1::]:
+		if char==' ':
+			break
+		else:
+			mycounty+=char
+	print mycounty
+	codes = webscraper.parse_file(mystate, mycounty)
+	return codes
