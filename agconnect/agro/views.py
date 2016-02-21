@@ -10,7 +10,7 @@ from requests_oauthlib import OAuth1
 from geopy.geocoders import Nominatim
 import webscraper
 import time
-
+import csvparser
 CLIENT_ID="dpv6qe32snp744"
 CLIENT_SECRET="bvbbhspmkm6442lnfh0eujqcsl"
 INTERNAL_ID="02ff6b24-701e-4527-a96a-99dcd0a42d68"
@@ -213,8 +213,9 @@ def geo_view(request):
 		else:
 			mystring+=char
 #	print location.address
+	jsons = csvparser.weather_stuff("Dubuque")
 	codes = webscraper.parse_file("Illinois", mystring)
-	return render(request, "agro/index.html", {"stuff": codes})
+	return render(request, "agro/index.html", {"stuff": jsons})
 
 
 def geo_helper(lat, longi):
