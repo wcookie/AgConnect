@@ -146,9 +146,9 @@ def homepage(request):
 	"state_alpha": state_val3, "format": "JSON"}
 	count=0
 	firstvalues=[]
-	while count<2:
+	while count<10:
 		newparam=params
-		newparam["year"]=str(2014+count)
+		newparam["year"]=str(2005+count)
 		#r2=requests.get(geturl, params2)
 		r = requests.get(geturl, newparam)
 		d = json.loads(r.text)
@@ -192,7 +192,8 @@ def homepage(request):
 			newjson["TONS / ACRE"] = [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]
 		firstvalues.append(newjson)
 		count+=1
-
+		returner=firstvalues
+	
 	count=0
 	secondvalues=[]
 	while count<2:
@@ -201,7 +202,7 @@ def homepage(request):
 		#r2=requests.get(geturl, params2)
 		r = requests.get(geturl, newparam)
 		d = json.loads(r.text)
-		print newparam
+		
 		tons =0
 		tonscount=0
 		tonsperacre=0
@@ -289,54 +290,25 @@ def homepage(request):
 			newjson["TONS / ACRE"] = [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]
 		thirdvalues.append(newjson)
 		count+=1
-		dubuquetons = firstvalues[0]['TONS'][2]
-		dubuquedollars = firstvalues[0]['$'][2]
-		dubuquetonsperacre = firstvalues[0]['TONS / ACRE'][2]
-		jsons = csvparser.weather_stuff("Dubuque")
-		for item in jsons:
-			item['month'].append(dubuquetonsperacre)
-			item['month'].append(dubuquetons)
-			item['month'].append(dubuquedollars)
+
+	count=0	
+	jsons = csvparser.weather_stuff("Dubuque")
+	for item in jsons:
+		dubuquetons = firstvalues[count]['TONS'][2]
+		dubuquedollars = firstvalues[count]['$'][2]
+	#	dubuquetonsperacre = firstvalues[count]["TONS / ACRE"][2]
+	#	item['month'].append(dubuquetonsperacre)
+		print dubuquetons
+		item["month"].append(dubuquetons)
+		item["month"].append(dubuquedollars)
+		count+=1
 
 
-		#returner =  [firstvalues, secondvalues, thirdvalues]
-		returner = jsons
-	"""
-	d=json.loads(r2.text)
-	tons =0
-	tonscount=0
-	tonsperacre=0
-	tonsperacrecount=0
-	dollars=0
-	dollarscount=0
-	for j in d['data']:
-		val=j['Value']
-		oldval=val
-		val=val.replace(',', '')
-		try:
-			intval=int(val)
-		#try: 
-			if j['unit_desc']=="$":
-				
-				dollars+=intval
-				dollarscount+=1
-			elif j['unit_desc']=="TONS":
-				tons+=intval
-				tonscount+=1
-			elif j['unit_desc']=="TONS / ACRE":
-				tonsperacrecount+=1
-				tonsperacre += intval
-		except:
-			pass
-	if dollarscount>0:
-		newjson[1]['$']=[dollars,dollarscount,dollars/dollarscount]
-	if tonscount>0:
-		newjson[1]['TONS']=[tons, tonscount, tons/tonscount]
-	if tonsperacrecount>0:
-		newjson[1]["TONS / ACRE"] = [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]
-	"""
+	#returner =  [firstvalues, secondvalues, thirdvalues]
+	returner = jsons
+	
 #	newjson =  {"$": [dollars, dollarscount, dollars/dollarscount], "TONS": [tons, tonscount, tons/tonscount], "TONS / ACRE": [tonsperacre, tonsperacrecount, tonsperacre/tonsperacrecount]}
-	return render(request, "agro/index.html", {"stuff": returner})	
+	return render(request, "agro/graphs.html", {"stuff": returner})	
 
 
 
