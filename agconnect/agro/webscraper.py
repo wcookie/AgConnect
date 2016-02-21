@@ -54,9 +54,12 @@ def state_code(state):
 		'West Virginia' : '54',
 		'Wisconsin' : '55',
 		'Wyoming' : '56',
+		'Morris' : '34',
 	}[state] 
 
 def parse_file(state, county):
+	if county=="Shongum":
+		county="Morris"
 	code = state_code(state)
 	module_dir = os.path.dirname(__file__)  # get current directory
 	file_path = os.path.join(module_dir, 'codes.txt')
