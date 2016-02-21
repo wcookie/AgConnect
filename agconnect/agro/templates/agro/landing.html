@@ -26,6 +26,9 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="about.html">About</a></li>
+            {% if request.session.access_token %}
+            	<li><a href="{% url 'agro:dash' %}"> First Farm </li></a>
+            {% endif %}
             <li><a href="https://www.climate.com/">The Climate Corporation</a></li>
           </ul>
         </div><!--/.nav-collapse -->

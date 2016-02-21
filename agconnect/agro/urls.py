@@ -5,6 +5,7 @@ urlpatterns = [
    
     url(r'^$', view=views.login_view, name="login"),
     url(r'^redirecter/$', view = views.test_view),
-    url(r'^homepage/$', view = views.homepage, name = "dash"),
+    url(r'^firstfarm/$', view = views.homepage, name = "dash"),
+    url(r'^secondfarm/$', view=views.secondfarm),
     url(r'^geo/$', view =views.geo_view),
 ]
