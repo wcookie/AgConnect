@@ -39,7 +39,7 @@
 
 <div class="container">
     
-
+    <h1>{{name}}</h1>
 
     
     <div id="chart"></div>
@@ -47,7 +47,7 @@
 //Matt if possible it would be dope if you could add a 4th box for the fourth data entry for each "month" (it is actually a year)
     
    
-   function graphs(h, w, ii, jj, kk, ll, d) {
+  function graphs(h, w, ii, jj, kk, ll, d) {
 
     var jsonData = d;
 
@@ -247,7 +247,7 @@
 
         sampleSVG.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(-30," + height + ")")
+            .attr("transform", "translate(-25," + height + ")")
             .call(xAxis);
 
         }

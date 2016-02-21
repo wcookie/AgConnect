@@ -1,7 +1,10 @@
 #head {
 	margin-top:65px;
 }
-
+#cont {
+	text-align: center;
+	margin-top:250px;
+}
 body{
 	background-image: url("https://i.ytimg.com/vi/tbkTi3zNN9s/maxresdefault.jpg");
 }
